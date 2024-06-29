@@ -15,7 +15,7 @@ export class CheckService implements CheckServiceUseCase{
         private readonly sucessCallback: SucessCallback,
         private readonly errorCallback: ErrorCallback
     ) {
-
+    
     }
 
     public async execute (url: string): Promise<boolean>{
@@ -26,7 +26,11 @@ export class CheckService implements CheckServiceUseCase{
                 throw new Error(`Error on check service ${url}`)
             }
 
-            const log = new LogEntity(`Service ${url} is working`, LogSeverityLevel.low)
+            const log = new LogEntity({
+                message: `Service ${url} is working`, 
+                level: LogSeverityLevel.low,
+                origin: 'check-service.ts'
+            })
             this.logRepository.saveLog(log)
             this.sucessCallback && this.sucessCallback()
 
@@ -35,7 +39,11 @@ export class CheckService implements CheckServiceUseCase{
 
             const errorMessage = `${url} is not ok. ${error}`
 
-            const log = new LogEntity(`${errorMessage}`, LogSeverityLevel.high)
+            const log = new LogEntity({
+                message:` ${errorMessage}`,
+                level: LogSeverityLevel.high,
+                origin: 'check-service.ts'
+            })
             this.logRepository.saveLog(log)
 
             this.errorCallback && this.errorCallback(errorMessage)
